@@ -282,6 +282,7 @@ export function pathCommandsFromString(d) {
     // if commandArgs was invalid, it may be encounering an "implicit repeated command" where the args are directly after the previous command
     // without explicitly specifying the command type. In this case we want to repeat the previous command type.
     if (!commandArgs) {
+      commandArgs = typeMap[command.type];
       isRepeatedCommand = true;
     }
 
