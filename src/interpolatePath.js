@@ -1,6 +1,6 @@
 import splitCurve from './split';
 
-const commandTokenRegex = /[MLCSTQAHVZmlcstqahv]|-?[\d.e+]+/g;
+const commandTokenRegex = /[MLCSTQAHVZmlcstqahv]|-?\d*\.?[\de+]*/g;
 /**
  * List of params for each command type in a path `d` attribute
  */
@@ -285,7 +285,17 @@ export function pathCommandsFromString(d) {
 
       // add each of the expected args for this command:
       for (let a = 0; a < commandArgs.length; ++a) {
-        command[commandArgs[a]] = +tokens[i + a + 1];
+        let token = tokens[i + a + 1];
+
+        // handle implicit 0 before decmial point
+        if (token.startsWith('.')) {
+          token = '0' + token;
+        }
+        if (token.startsWith('-.')) {
+          token = '-0.' + token.split('.')[1];
+        }
+
+        command[commandArgs[a]] = +token;
       }
 
       // need to increment our token index appropriately since
