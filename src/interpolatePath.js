@@ -271,22 +271,46 @@ export function pathCommandsFromString(d) {
   const tokens = (d || '').match(commandTokenRegex) || [];
   const commands = [];
   let commandArgs;
-  let command;
+  let command = {};
+  let isRepeatedCommand = false;
 
   // iterate over each token, checking if we are at a new command
   // by presence in the typeMap
   for (let i = 0; i < tokens.length; ++i) {
     commandArgs = typeMap[tokens[i]];
 
+    // if commandArgs was invalid, it may be encountering an "implicit repeated command" where the args are directly after the previous command,
+    // without explicitly specifying the command type. In this case we want to repeat the previous command type.
+    if (!commandArgs) {
+      commandArgs = typeMap[command.type];
+      isRepeatedCommand = true;
+    }
+
     // new command found:
     if (commandArgs) {
-      command = {
-        type: tokens[i],
-      };
+      if (isRepeatedCommand) {
+        command = {
+          type:
+            // when an M command is repeated it's considered a L command by the SVG spec
+            // all other command types stay the same upon repeating
+            command.type === 'M'
+              ? 'L'
+              : command.type === 'm'
+              ? 'l'
+              : command.type,
+        };
+      } else {
+        command = {
+          type: tokens[i],
+        };
+        // if this is not a repeated command, we should increment our token index to look for the first argument
+        // otherwise, for repeated commands the current token index is the first argument, so no need to increment
+        i++;
+      }
 
       // add each of the expected args for this command:
       for (let a = 0; a < commandArgs.length; ++a) {
-        let token = tokens[i + a + 1];
+        let token = tokens[i + a];
 
         // handle implicit 0 before decmial point
         if (token.startsWith('.')) {
@@ -301,10 +325,12 @@ export function pathCommandsFromString(d) {
 
       // need to increment our token index appropriately since
       // we consumed token args
-      i += commandArgs.length;
+      i += commandArgs.length - 1;
 
       commands.push(command);
     }
+
+    isRepeatedCommand = false;
   }
   return commands;
 }
