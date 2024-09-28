@@ -126,9 +126,9 @@ function splitSegment(commandStart, commandEnd, segmentCount) {
 
   // line, quadratic bezier, or cubic bezier
   if (
-    commandEnd.type === 'L' ||
-    commandEnd.type === 'Q' ||
-    commandEnd.type === 'C'
+    commandEnd.type.toUpperCase() === 'L' ||
+    commandEnd.type.toUpperCase() === 'Q' ||
+    commandEnd.type.toUpperCase() === 'C'
   ) {
     segments = segments.concat(
       splitCurve(commandStart, commandEnd, segmentCount)
@@ -139,7 +139,7 @@ function splitSegment(commandStart, commandEnd, segmentCount) {
     const copyCommand = Object.assign({}, commandStart);
 
     // convert M to L
-    if (copyCommand.type === 'M') {
+    if (copyCommand.type.toUpperCase() === 'M') {
       copyCommand.type = 'L';
     }
 
