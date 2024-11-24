@@ -1,9 +1,3 @@
-(function (global, factory) {
-typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
-typeof define === 'function' && define.amd ? define(['exports'], factory) :
-(global = typeof globalThis !== 'undefined' ? globalThis : global || self, factory(global.d3 = global.d3 || {}));
-}(this, (function (exports) { 'use strict';
-
 function ownKeys(object, enumerableOnly) {
   var keys = Object.keys(object);
 
@@ -805,10 +799,4 @@ function interpolatePath(a, b, interpolateOptions) {
   };
 }
 
-exports.interpolatePath = interpolatePath;
-exports.interpolatePathCommands = interpolatePathCommands;
-exports.pathCommandsFromString = pathCommandsFromString;
-
-Object.defineProperty(exports, '__esModule', { value: true });
-
-})));
+export { interpolatePath, interpolatePathCommands, pathCommandsFromString };
